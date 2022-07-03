@@ -93,7 +93,7 @@ To set the styles, you can pass the [`onComputed`](#applying-custom-styles-on-co
   import { writable } from "svelte/store";
   import { arrow } from "svelte-floating-ui";
 
-  const arrowRef = writable(null);
+  let arrowRef:HTMLBaseElement;
   const [ floatingRef, floatingContent, update] = createFloatingActions({
     strategy: "absolute",
     placement: "bottom",
@@ -109,7 +109,7 @@ To set the styles, you can pass the [`onComputed`](#applying-custom-styles-on-co
         left: 'right',
       }[placement.split('-')[0]];
 
-      Object.assign($arrowRef.style, {
+      Object.assign(arrowRef.style, {
         left: x != null ? `${x}px` : "",
         top: y != null ? `${y}px` : "",
         [staticSide]: "-4px"
@@ -127,7 +127,7 @@ To set the styles, you can pass the [`onComputed`](#applying-custom-styles-on-co
 {#if showTooltip}
   <div class="tooltip" use:floatingContent>
     Tooltip this is some longer text than the button
-    <div class="arrow" bind:this={$arrowRef} />
+    <div class="arrow" bind:this={arrowRef} />
   </div>
 {/if}
 ```
