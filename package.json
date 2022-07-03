@@ -1,6 +1,23 @@
 {
 	"name": "svelte-floating-ui",
-	"version": "0.0.1",
+    "description": "Svelte floating ui",
+    "version": "0.0.2",
+    "license": "MIT",
+    "main": "./index.js",
+    "svelte": "./index.js",
+    "repository": "https://github.com/fedorovvvv/svelte-floating-ui",
+    "author": "Nikita Fedorov <nikitafedorov7@yandex.ru>",
+    "keywords": [
+        "svelte",
+        "light",
+        "floating",
+        "floating-ui",
+        "sveltejs",
+        "svelte-floating-ui",
+        "svelte-floating",
+        "svelte-v3",
+        "svelte3"
+    ],
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
@@ -31,6 +48,7 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/core": "^0.7.3",
-		"@floating-ui/dom": "^0.5.4"
+		"@floating-ui/dom": "^0.5.4",
+		"svelte2tsx": "^0.5.11"
 	}
 }
