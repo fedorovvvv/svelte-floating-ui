@@ -1,38 +1,139 @@
-# create-svelte
+# svelte-floating-ui
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+[Floating UI](https://github.com/floating-ui/floating-ui/) for Svelte with [actions](https://svelte.dev/docs#use_action). No wrapper components or component bindings required!
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+## Installation
 
 ```bash
-# create a new project in the current directory
-npm init svelte
-
-# create a new project in my-app
-npm init svelte my-app
+npm i svelte-floating-ui
 ```
 
-## Developing
+This is not yet published on npm
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Since Svelte automatically bundles all required dependencies, you only need to install this package as a dev dependency with the -D flag.
 
-```bash
-npm run dev
+## Usage
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+`createFloatingActions` takes an optional [options object](https://floating-ui.com/docs/computePosition#options) for configuring the content placement. The content action also takes an optional [options object](https://floating-ui.com/docs/computePosition#options) for updating the options of the content placement.
+
+`createFloatingActions` also returns an `update` method as it's third value which can be used to [manually update](https://floating-ui.com/docs/computePosition#updating) the content position.
+
+### Example
+
+```svelte
+<script lang="ts">
+  import { offset, flip, shift } from "@floating-ui/dom";
+  import { createFloatingActions } from "svelte-floating-ui";
+
+  const [ floatingRef, floatingContent ] = createFloatingActions({
+    strategy: "absolute",
+    placement: "top",
+    middleware: [
+      offset(6),
+      flip(),
+      shift(),
+    ]
+  });
+
+  let showTooltip: boolean = false;
+</script>
+
+<button 
+  on:mouseenter={() => showTooltip = true}
+  on:mouseleave={() => showTooltip = false}
+  use:floatingRef
+>Hover me</button>
+
+{#if showTooltip}
+  <div style="position:absolute" use:floatingContent>
+    Tooltip
+  </div>
+{/if}
 ```
 
-## Building
+## API
 
-To create a production version of your app:
+### Setting Floating UI options
 
-```bash
-npm run build
+Floating UI options can be set statically when creating the actions, or dynamically on the content action.
+
+If both are set, then the dynamic options will be merged with the initial options.
+
+```svelte
+<script>
+  // set once and no longer updated
+  const [ floatingRef, floatingContent ] = createFloatingActions(initOptions);
+</script>
+
+<!-- will be merged with initOptions -->
+<div use:floatingContent={ dynamicOptions }/>
 ```
 
-You can preview the production build with `npm run preview`.
+### Updating the Floating UI position
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+The content element's position can be manually updated by using the third value returned by `createFloatingActions`. This method takes an optional options object which will be merged with the initial options.
+
+```svelte
+<script>
+  // Get update method
+  const [ floatingRef, floatingContent, update] = createFloatingActions(initOptions);
+
+  update(updateOptions)
+</script>
+```
+
+### Applying custom styles on compute
+
+To apply styles manually, you can pass the `onComputed` option to `createFloatingActions`. This is a function that recieves a [`ComputePositionReturn`](https://floating-ui.com/docs/computeposition#return-value). This function is called every time the tooltip's position is computed.
+
+See [Arrow Middleware](#arrow-middleware) for an example on it's usage.
+
+## Arrow Middleware
+
+For convenience, a custom [Arrow middleware](https://floating-ui.com/docs/arrow) is provided. Rather than accepting an `HTMLElement`, this takes a `Writable<HTMLElement>`. Otherwise, this middleware works exactly as the regular Floating UI one, including needing to manually set the arrow styles.
+
+To set the styles, you can pass the [`onComputed`](#applying-custom-styles-on-compute) option. The below implementation is copied from the [Floating UI Tutorial](https://floating-ui.com/docs/tutorial#arrow-middleware).
+
+```svelte
+<script>
+  import { writable } from "svelte/store";
+  import { arrow } from "svelte-floating-ui";
+
+  const arrowRef = writable(null);
+  const [ floatingRef, floatingContent, update] = createFloatingActions({
+    strategy: "absolute",
+    placement: "bottom",
+    middleware: [
+      arrow({ element: arrowRef })
+    ],
+    onComputed({ placement, middlewareData }) {
+      const { x, y } = middlewareData.arrow;
+      const staticSide = {
+        top: 'bottom',
+        right: 'left',
+        bottom: 'top',
+        left: 'right',
+      }[placement.split('-')[0]];
+
+      Object.assign($arrowRef.style, {
+        left: x != null ? `${x}px` : "",
+        top: y != null ? `${y}px` : "",
+        [staticSide]: "-4px"
+      });
+    }
+  });
+</script>
+
+<button 
+  on:mouseenter={() => showTooltip = true}
+  on:mouseleave={() => showTooltip = false}
+  use:floatingRef
+>Hover me</button>
+
+{#if showTooltip}
+  <div class="tooltip" use:floatingContent>
+    Tooltip this is some longer text than the button
+    <div class="arrow" bind:this={$arrowRef} />
+  </div>
+{/if}
+```
