@@ -2,15 +2,9 @@
 
 [Floating UI](https://github.com/floating-ui/floating-ui/) for Svelte with [actions](https://svelte.dev/docs#use_action). No wrapper components or component bindings required!
 
-## Installation
-
 ```bash
 npm i -D svelte-floating-ui
 ```
-
-This is not yet published on npm
-
-Since Svelte automatically bundles all required dependencies, you only need to install this package as a dev dependency with the -D flag.
 
 ## Usage
 
