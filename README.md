@@ -5,7 +5,7 @@
 ## Installation
 
 ```bash
-npm i svelte-floating-ui
+npm i -D svelte-floating-ui
 ```
 
 This is not yet published on npm
