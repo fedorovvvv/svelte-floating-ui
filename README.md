@@ -82,7 +82,7 @@ The content element's position can be manually updated by using the third value 
 
 ### [Floating UI autoUpdate](https://floating-ui.com/docs/autoUpdate)
 
-You can use autoUpdate options](https://floating-ui.com/docs/autoUpdate#options) directly in initOptions for [createFloatingActions or floatingContent](https://github.com/fedorovvvv/svelte-floating-ui#example)
+You can use autoUpdate options](https://floating-ui.com/docs/autoUpdate#options) directly in initOptions for [createFloatingActions or floatingContent](https://github.com/fedorovvvv/svelte-floating-ui#example), but not in [update](https://github.com/fedorovvvv/svelte-floating-ui#updating-the-floating-ui-position)
 
 ```svelte
 <script>
