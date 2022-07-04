@@ -17,10 +17,10 @@ export type ComputeConfig = Omit<ComputePositionConfig, "platform"> & {
 };
 export type UpdatePosition = (contentOptions?: ComputeConfig) => void;
 export type ReferenceAction = (node: HTMLElement) => void;
-export type FloatingAction = (node: HTMLElement, contentOptions?: ComputeConfig) => void;
+export type ContentAction = (node: HTMLElement, contentOptions?: ComputeConfig) => void;
 export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement> };
 
-export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAction, FloatingAction, UpdatePosition] {
+export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAction, ContentAction, UpdatePosition] {
     let referenceElement: ReferenceElement;
     let floatingElement: FloatingElement;
     let options: ComputeConfig | undefined = initOptions;
@@ -45,7 +45,7 @@ export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAc
         updatePosition();
     }
 
-    const floatingAction: FloatingAction = (node, contentOptions) => {
+    const contentAction: ContentAction = (node, contentOptions) => {
         let autoUpdateDestroy:ReturnType<typeof _autoUpdate> | undefined
         floatingElement = node;
         options = { ...initOptions, ...contentOptions };
@@ -63,7 +63,7 @@ export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAc
 
     return [
         referenceAction,
-        floatingAction,
+        contentAction,
         updatePosition
     ]
 }
