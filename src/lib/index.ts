@@ -15,7 +15,7 @@ export type ComputeConfig = Omit<ComputePositionConfig, "platform"> & {
      */
     autoUpdate?: false | Partial<Options>
 };
-export type UpdatePosition = (contentOptions?: ComputeConfig) => void;
+export type UpdatePosition = (contentOptions?: Omit<ComputeConfig, 'autoUpdate'>) => void;
 export type ReferenceAction = (node: HTMLElement) => void;
 export type ContentAction = (node: HTMLElement, contentOptions?: ComputeConfig) => void;
 export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement> };
