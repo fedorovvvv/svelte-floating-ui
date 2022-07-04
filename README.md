@@ -80,6 +80,44 @@ The content element's position can be manually updated by using the third value 
 </script>
 ```
 
+### [Floating UI autoUpdate](https://floating-ui.com/docs/autoUpdate)
+
+You can use autoUpdate options](https://floating-ui.com/docs/autoUpdate#options) directly in initOptions for [createFloatingActions or floatingContent](https://github.com/fedorovvvv/svelte-floating-ui#example)
+
+```svelte
+<script>
+  import { offset, flip, shift } from "@floating-ui/dom";
+  import { createFloatingActions } from "svelte-floating-ui";
+
+  const [ floatingRef, floatingContent ] = createFloatingActions({
+    strategy: "absolute",
+    placement: "top",
+    middleware: [
+      offset(6),
+      flip(),
+      shift(),
+    ],
+    autoUpdate: { // or false
+      ancestorScroll: true
+    }
+  });
+</script>
+```
+
+What values can autoUpdate have?
+
+Partial<[Options](https://floating-ui.com/docs/autoUpdate#options)>
+```ts
+/**
+* false: Don't initialize autoUpdate;
+* object: Initialization with its own parameters;
+* undefined: Standard autoUpdate values from the documentation;
+* @default undefined
+*/
+autoUpdate?: false | Partial<Options>
+```
+
+
 ### Applying custom styles on compute
 
 To apply styles manually, you can pass the `onComputed` option to `createFloatingActions`. This is a function that recieves a [`ComputePositionReturn`](https://floating-ui.com/docs/computeposition#return-value). This function is called every time the tooltip's position is computed.
