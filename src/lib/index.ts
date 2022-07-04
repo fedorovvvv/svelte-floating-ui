@@ -1,47 +1,40 @@
-import type { ComputePositionConfig, ComputePositionReturn, Middleware, Padding } from "@floating-ui/core";
+import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement } from "@floating-ui/core";
 import { arrow as arrowCore } from "@floating-ui/core";
-import { computePosition } from "@floating-ui/dom";
+import { autoUpdate as _autoUpdate, computePosition } from "@floating-ui/dom";
+import type { Options } from "@floating-ui/dom/src/autoUpdate";
 import type { Writable } from "svelte/store";
 import { get } from "svelte/store";
 
 export type ComputeConfig = Omit<ComputePositionConfig, "platform"> & {
     onComputed?: (computed: ComputePositionReturn) => void
+    /**
+     * false: disable;
+     * object: init;
+     * undefined: default floating options;
+     * @default undefined
+     */
+    autoUpdate?: false | Partial<Options>
 };
 export type UpdatePosition = (contentOptions?: ComputeConfig) => void;
 export type ReferenceAction = (node: HTMLElement) => void;
-export type ContentAction = (node: HTMLElement, contentOptions?: ComputeConfig) => void;
+export type FloatingAction = (node: HTMLElement, contentOptions?: ComputeConfig) => void;
 export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement> };
 
-export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAction, ContentAction, UpdatePosition] {
-    let referenceElement: HTMLElement;
-    let contentElement: HTMLElement;
+export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAction, FloatingAction, UpdatePosition] {
+    let referenceElement: ReferenceElement;
+    let floatingElement: FloatingElement;
     let options: ComputeConfig | undefined = initOptions;
 
-    const events = {
-        handler() {
-            updatePosition()
-        },
-        init() {
-            window.addEventListener('scroll', this.handler)
-            window.addEventListener('resize', this.handler)
-        },
-        destroy() {
-            window.removeEventListener('scroll', this.handler)
-            window.removeEventListener('resize', this.handler)
-        }
-    }
-
-    const updatePosition = (updateOptions?: ComputeConfig) => {
-        if (referenceElement && contentElement) {
+    const updatePosition:UpdatePosition = (updateOptions) => {
+        if (referenceElement && floatingElement) {
             options = { ...initOptions, ...updateOptions };
-            computePosition(referenceElement, contentElement, options)
+            computePosition(referenceElement, floatingElement, options)
                 .then(v => {
-                    Object.assign(contentElement.style, {
+                    Object.assign(floatingElement.style, {
                         position: v.strategy,
                         left: `${v.x}px`,
                         top: `${v.y}px`,
                     });
-
                     options?.onComputed && options.onComputed(v);
                 });
         }
@@ -50,29 +43,27 @@ export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAc
     const referenceAction: ReferenceAction = node => {
         referenceElement = node;
         updatePosition();
-        return {
-            destroy() {
-                events.destroy()
-            }
-        }
     }
 
-    const contentAction: ContentAction = (node, contentOptions?) => {
-        contentElement = node;
+    const floatingAction: FloatingAction = (node, contentOptions) => {
+        let autoUpdateDestroy:ReturnType<typeof _autoUpdate> | undefined
+        floatingElement = node;
         options = { ...initOptions, ...contentOptions };
         updatePosition();
-        events.init()
+        if(options.autoUpdate !== false) {
+            autoUpdateDestroy = _autoUpdate(referenceElement, floatingElement, () => updatePosition(), options.autoUpdate);
+        }
         return {
             update: updatePosition,
             destroy() {
-                events.destroy()
+                autoUpdateDestroy && autoUpdateDestroy()
             }
         }
     }
 
     return [
         referenceAction,
-        contentAction,
+        floatingAction,
         updatePosition
     ]
 }

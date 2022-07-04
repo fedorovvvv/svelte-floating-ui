@@ -102,7 +102,7 @@ To set the styles, you can pass the [`onComputed`](#applying-custom-styles-on-co
     strategy: "absolute",
     placement: "bottom",
     middleware: [
-      arrow({ element: $arrowRef })
+      arrow({ element: arrowRef })
     ],
     onComputed({ placement, middlewareData }) {
       const { x, y } = middlewareData.arrow;
