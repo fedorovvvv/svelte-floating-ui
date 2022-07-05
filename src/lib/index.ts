@@ -10,7 +10,7 @@ export type ComputeConfig = Omit<ComputePositionConfig, "platform"> & {
     /**
     * false: Don't initialize autoUpdate;
     * true: Standard autoUpdate values from the documentation;
-    * object: Initialization with its own parameters;
+    * object: All as in the autoUpdate documentation. Your parameters are added to the default ones;
     * @default true
     */
     autoUpdate?: boolean | Partial<Options>
