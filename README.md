@@ -98,8 +98,8 @@ You can use [autoUpdate options](https://floating-ui.com/docs/autoUpdate#options
       shift(),
     ],
     autoUpdate: { // or false to disable everything
-      ancestorResize:false
-      elementResize:false
+      ancestorResize: false,
+      elementResize: false
     }
   });
 </script>
