@@ -1,4 +1,4 @@
-# svelte-floating-ui
+# 🎈Svelte Floating UI
 
 [![npm version](http://img.shields.io/npm/v/svelte-floating-ui.svg)](https://www.npmjs.com/package/svelte-floating-ui)
 [![npm downloads](https://img.shields.io/npm/dm/svelte-floating-ui.svg)](https://www.npmjs.com/package/svelte-floating-ui)
