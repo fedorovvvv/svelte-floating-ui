@@ -8,11 +8,11 @@ import { get } from "svelte/store";
 export type ComputeConfig = Omit<ComputePositionConfig, "platform"> & {
     onComputed?: (computed: ComputePositionReturn) => void
     /**
-     * false: disable;
-     * object: init;
-     * undefined: default floating options;
-     * @default undefined
-     */
+    * false: Don't initialize autoUpdate;
+    * object: Initialization with its own parameters;
+    * undefined: Standard autoUpdate values from the documentation;
+    * @default undefined
+    */
     autoUpdate?: false | Partial<Options>
 };
 export type UpdatePosition = (contentOptions?: Omit<ComputeConfig, 'autoUpdate'>) => void;
