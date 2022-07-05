@@ -110,11 +110,11 @@ Partial<[Options](https://floating-ui.com/docs/autoUpdate#options)>
 ```ts
 /**
 * false: Don't initialize autoUpdate;
-* object: Initialization with its own parameters;
-* undefined: Standard autoUpdate values from the documentation;
-* @default undefined
+* true: Standard autoUpdate values from the documentation;
+* object: All as in the autoUpdate documentation. Your parameters are added to the default ones;
+* @default true
 */
-autoUpdate?: false | Partial<Options>
+autoUpdate?: boolean | Partial<Options>
 ```
 
 

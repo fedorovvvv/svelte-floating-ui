@@ -20,11 +20,15 @@
                     });
                 },
             })
-        ]
+        ],
     });
+    let autoUpdate = false
 </script>
 
 <main>
+    <button on:click="{() => autoUpdate = !autoUpdate}">
+        toggle autoUpdate: {autoUpdate}
+    </button>
     <div class="wrapper">
         <button
             on:click='{() => opened = !opened}'
@@ -33,7 +37,9 @@
             Show/Hide
         </button>
         {#if opened}
-            <ul use:floatingContent>
+            <ul use:floatingContent="{{
+                autoUpdate
+            }}">
                 <li>OMG!</li>
                 <li>NONONO!</li>
             </ul>
@@ -50,6 +56,7 @@
     }
     main {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         height: 500px;
