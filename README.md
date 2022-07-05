@@ -174,3 +174,5 @@ To set the styles, you can pass the [`onComputed`](#applying-custom-styles-on-co
   </div>
 {/if}
 ```
+
+_Thanks to [TehNut/svelte-floating-ui](https://github.com/TehNut/svelte-floating-ui) for the foundation for this package_
