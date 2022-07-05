@@ -9,11 +9,11 @@ export type ComputeConfig = Omit<ComputePositionConfig, "platform"> & {
     onComputed?: (computed: ComputePositionReturn) => void
     /**
     * false: Don't initialize autoUpdate;
+    * true: Standard autoUpdate values from the documentation;
     * object: Initialization with its own parameters;
-    * undefined: Standard autoUpdate values from the documentation;
-    * @default undefined
+    * @default true
     */
-    autoUpdate?: false | Partial<Options>
+    autoUpdate?: boolean | Partial<Options>
 };
 export type UpdatePosition = (contentOptions?: Omit<ComputeConfig, 'autoUpdate'>) => void;
 export type ReferenceAction = (node: HTMLElement) => void;
@@ -23,11 +23,18 @@ export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement> }
 export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAction, ContentAction, UpdatePosition] {
     let referenceElement: ReferenceElement;
     let floatingElement: FloatingElement;
+    const defaultOptions:Partial<ComputeConfig> = {
+        autoUpdate: true
+    }
     let options: ComputeConfig | undefined = initOptions;
+
+    const getOptions = (mixin?:object):ComputeConfig => {
+        return {...defaultOptions, ...(initOptions || {}), ...(mixin || {}) }
+    }
 
     const updatePosition:UpdatePosition = (updateOptions) => {
         if (referenceElement && floatingElement) {
-            options = { ...initOptions, ...updateOptions };
+            options = getOptions(updateOptions);
             computePosition(referenceElement, floatingElement, options)
                 .then(v => {
                     Object.assign(floatingElement.style, {
@@ -48,15 +55,29 @@ export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAc
     const contentAction: ContentAction = (node, contentOptions) => {
         let autoUpdateDestroy:ReturnType<typeof _autoUpdate> | undefined
         floatingElement = node;
-        options = { ...initOptions, ...contentOptions };
-        updatePosition();
-        if(options.autoUpdate !== false) {
-            autoUpdateDestroy = _autoUpdate(referenceElement, floatingElement, () => updatePosition(), options.autoUpdate);
+        options = getOptions(contentOptions);
+        updatePosition(contentOptions);
+        const destroyAutoUpdate = () => {
+            if (autoUpdateDestroy) {
+                autoUpdateDestroy()
+                autoUpdateDestroy = undefined
+            }
         }
+        const initAutoUpdate = ({autoUpdate} = options || {}):typeof autoUpdateDestroy => {
+            destroyAutoUpdate()
+            if(autoUpdate !== false) {
+                return _autoUpdate(referenceElement, floatingElement, () => updatePosition(options), (autoUpdate === true ? {} : autoUpdate));
+            }
+            return
+        }
+        autoUpdateDestroy = initAutoUpdate()
         return {
-            update: updatePosition,
+            update(contentOptions:Parameters<typeof contentAction>[1]) {
+                updatePosition(contentOptions)
+                autoUpdateDestroy = initAutoUpdate(contentOptions)
+            },
             destroy() {
-                autoUpdateDestroy && autoUpdateDestroy()
+                destroyAutoUpdate()
             }
         }
     }
