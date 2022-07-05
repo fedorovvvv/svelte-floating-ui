@@ -97,8 +97,9 @@ You can use [autoUpdate options](https://floating-ui.com/docs/autoUpdate#options
       flip(),
       shift(),
     ],
-    autoUpdate: { // or false
-      ancestorScroll: true
+    autoUpdate: { // or false to disable everything
+      ancestorResize:false
+      elementResize:false
     }
   });
 </script>
