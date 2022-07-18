@@ -56,7 +56,8 @@ export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAc
         let autoUpdateDestroy:ReturnType<typeof _autoUpdate> | undefined
         floatingElement = node;
         options = getOptions(contentOptions);
-        updatePosition(contentOptions);
+        setTimeout(() => updatePosition(contentOptions), 0) //tick doesn't work
+        updatePosition(contentOptions)
         const destroyAutoUpdate = () => {
             if (autoUpdateDestroy) {
                 autoUpdateDestroy()
