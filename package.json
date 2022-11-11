@@ -48,8 +48,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@floating-ui/core": "^0.7.3",
-		"@floating-ui/dom": "^0.5.4",
+		"@floating-ui/dom": "^1.0.4",
 		"svelte2tsx": "^0.5.11"
 	}
 }
