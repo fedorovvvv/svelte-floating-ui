@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/fedorovvvv/svelte-floating-ui/blob/main/logo.svg" alt="Svelte Floating UI">
+  <img src="https://github.com/fedorovvvv/svelte-floating-ui/blob/main/svelte-floating-ui.png" alt="Svelte Floating UI">
 <p>
 
 # 🎈Svelte Floating UI
