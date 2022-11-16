@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/fedorovvvv/svelte-floating-ui/blob/main/logo.svg" alt="Svelte Floating UI">
+<p>
+
 # 🎈Svelte Floating UI
 
 [![npm version](http://img.shields.io/npm/v/svelte-floating-ui.svg)](https://www.npmjs.com/package/svelte-floating-ui)
