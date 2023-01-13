@@ -1,11 +1,15 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+//@ts-ignore
 import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "@floating-ui/core";
+//@ts-ignore
 import { arrow as arrowCore } from "@floating-ui/core";
 import { autoUpdate as _autoUpdate, computePosition } from "@floating-ui/dom";
 import type { Options } from "@floating-ui/dom/src/autoUpdate";
-import type { Writable } from "svelte/store";
+import type { Readable, Writable } from "svelte/store";
 import { get } from "svelte/store";
+import { onDestroy } from 'svelte';
 
-export type ComputeConfig = Omit<ComputePositionConfig, "platform"> & {
+export type ComputeConfig = Partial<ComputePositionConfig> & {
     onComputed?: (computed: ComputePositionReturn) => void
     /**
     * false: Don't initialize autoUpdate;
@@ -16,7 +20,7 @@ export type ComputeConfig = Omit<ComputePositionConfig, "platform"> & {
     autoUpdate?: boolean | Partial<Options>
 };
 export type UpdatePosition = (contentOptions?: Omit<ComputeConfig, 'autoUpdate'>) => void;
-export type ReferenceAction = (node: HTMLElement | VirtualElement) => void;
+export type ReferenceAction = (node: HTMLElement | Writable<VirtualElement> | VirtualElement) => void;
 export type ContentAction = (node: HTMLElement, contentOptions?: ComputeConfig) => void;
 export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement> };
 
@@ -48,8 +52,14 @@ export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAc
     }
 
     const referenceAction: ReferenceAction = node => {
-        referenceElement = node;
-        updatePosition();
+        if ('subscribe' in node) {
+			setupVirtualElementObserver(node);
+			return {};
+		} else {
+            referenceElement = node;
+            updatePosition();
+		}
+        
     }
 
     const contentAction: ContentAction = (node, contentOptions) => {
@@ -83,6 +93,20 @@ export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAc
         }
     }
 
+    const setupVirtualElementObserver = (node: Readable<VirtualElement>) => {
+		const unsubscribe = node.subscribe(($node) => {
+			if (referenceElement === undefined) {
+				referenceElement = $node;
+				updatePosition();
+			} else {
+				// Preserve the reference to the virtual element.
+				Object.assign(referenceElement, $node);
+				updatePosition();
+			}
+		});
+		onDestroy(unsubscribe);
+	};
+
     return [
         referenceAction,
         contentAction,
@@ -94,7 +118,7 @@ export function arrow(options: ArrowOptions): Middleware {
     return {
         name: "arrow",
         options,
-        fn(args) {
+        fn(args:unknown) {
             const element = get(options.element);
 
             if (element) {

@@ -40,7 +40,7 @@ npm i -D svelte-floating-ui
   let showTooltip: boolean = false;
 </script>
 
-<button 
+<button
   on:mouseenter={() => showTooltip = true}
   on:mouseleave={() => showTooltip = false}
   use:floatingRef
@@ -112,6 +112,7 @@ You can use [autoUpdate options](https://floating-ui.com/docs/autoUpdate#options
 What values can autoUpdate have?
 
 Partial<[Options](https://floating-ui.com/docs/autoUpdate#options)>
+
 ```ts
 /**
 * false: Don't initialize autoUpdate;
@@ -122,6 +123,57 @@ Partial<[Options](https://floating-ui.com/docs/autoUpdate#options)>
 autoUpdate?: boolean | Partial<Options>
 ```
 
+### Virtual elements
+
+PopperJS allows the reference node to be a [virtual element](https://popper.js.org/docs/v2/virtual-elements/) which is not mounted on the DOM and cannot be used with Svelte actions.
+
+Despite this, `svelte-popperjs` provides first-class support for virtual elements, and even supports reactive updates to the virtual element with Svelte [stores](https://svelte.dev/tutorial/writable-stores).
+
+Here's an example creating a tooltip that follows the mouse cursor.
+
+```svelte
+<script>
+  import { createFloatingActions } from 'svelte-floating-ui';
+  import type { ClientRectObject, VirtualElement } from '@floating-ui/core';
+  import { writable } from 'svelte/store';
+
+  const [floatingRef, floatingContent] = createFloatingActions({
+    strategy: 'fixed', //or absolute
+  });
+
+  let x = 0
+  let y = 0
+
+  const mousemove = (ev: MouseEvent) => {
+    x = ev.clientX;
+    y = ev.clientY;
+  };
+
+  $: getBoundingClientRect = (): ClientRectObject => {
+    return {
+    x,
+    y,
+    top: y,
+    left: x,
+    bottom: y,
+    right: x,
+    width: 0,
+    height: 0
+    };
+  };
+  const virtualElement = writable<VirtualElement>({ getBoundingClientRect })
+
+  $: virtualElement.set({ getBoundingClientRect })
+
+  floatingRef(virtualElement)
+</script>
+
+<svelte:window on:mousemove={mousemove}/>
+
+<main>
+  <h2 use:floatingContent>Magic</h2>
+</main>
+```
 
 ### Applying custom styles on compute
 
@@ -165,7 +217,7 @@ To set the styles, you can pass the [`onComputed`](#applying-custom-styles-on-co
   });
 </script>
 
-<button 
+<button
   on:mouseenter={() => showTooltip = true}
   on:mouseleave={() => showTooltip = false}
   use:floatingRef
