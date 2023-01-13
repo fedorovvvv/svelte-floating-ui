@@ -123,44 +123,45 @@ Partial<[Options](https://floating-ui.com/docs/autoUpdate#options)>
 autoUpdate?: boolean | Partial<Options>
 ```
 
-### Virtual elements
+### [Virtual Elements](https://floating-ui.com/docs/virtual-elements)
 
-PopperJS allows the reference node to be a [virtual element](https://popper.js.org/docs/v2/virtual-elements/) which is not mounted on the DOM and cannot be used with Svelte actions.
+**Svelte Floating UI** allows you to use the `floatingRef` (reference node) like [VirtualElement](https://floating-ui.com/docs/virtual-elements)
 
-Despite this, `svelte-popperjs` provides first-class support for virtual elements, and even supports reactive updates to the virtual element with Svelte [stores](https://svelte.dev/tutorial/writable-stores).
+[Svelte stores](https://svelte.dev/docs#run-time-svelte-store) allow you to make these elements reactive and provide full support for them in the **Svelte Floating UI**
 
-Here's an example creating a tooltip that follows the mouse cursor.
+This is an example of creating a tooltip that runs behind the mouse cursor:
 
 ```svelte
-<script>
-  import { createFloatingActions } from 'svelte-floating-ui';
-  import type { ClientRectObject, VirtualElement } from '@floating-ui/core';
-  import { writable } from 'svelte/store';
-
+<script lang='ts'>
+  import { createFloatingActions } from 'svelte-floating-ui'
+  import type { ClientRectObject, VirtualElement } from '@floating-ui/core'
+  import { writable } from 'svelte/store'
+  
   const [floatingRef, floatingContent] = createFloatingActions({
     strategy: 'fixed', //or absolute
-  });
+  })
 
   let x = 0
   let y = 0
 
   const mousemove = (ev: MouseEvent) => {
-    x = ev.clientX;
-    y = ev.clientY;
-  };
+    x = ev.clientX
+    y = ev.clientY
+  }
 
-  $: getBoundingClientRect = (): ClientRectObject => {
+  $: getBoundingClientRect = ():ClientRectObject => {
     return {
-    x,
-    y,
-    top: y,
-    left: x,
-    bottom: y,
-    right: x,
-    width: 0,
-    height: 0
-    };
-  };
+      x,
+      y,
+      top: y,
+      left: x,
+      bottom: y,
+      right: x,
+      width: 0,
+      height: 0
+    }
+  }
+  
   const virtualElement = writable<VirtualElement>({ getBoundingClientRect })
 
   $: virtualElement.set({ getBoundingClientRect })
