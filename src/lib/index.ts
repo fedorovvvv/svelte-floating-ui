@@ -1,4 +1,4 @@
-import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement } from "@floating-ui/core";
+import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "@floating-ui/core";
 import { arrow as arrowCore } from "@floating-ui/core";
 import { autoUpdate as _autoUpdate, computePosition } from "@floating-ui/dom";
 import type { Options } from "@floating-ui/dom/src/autoUpdate";
@@ -16,7 +16,7 @@ export type ComputeConfig = Omit<ComputePositionConfig, "platform"> & {
     autoUpdate?: boolean | Partial<Options>
 };
 export type UpdatePosition = (contentOptions?: Omit<ComputeConfig, 'autoUpdate'>) => void;
-export type ReferenceAction = (node: HTMLElement) => void;
+export type ReferenceAction = (node: HTMLElement | VirtualElement) => void;
 export type ContentAction = (node: HTMLElement, contentOptions?: ComputeConfig) => void;
 export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement> };
 
