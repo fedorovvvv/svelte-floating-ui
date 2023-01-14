@@ -1,7 +1,7 @@
 {
 	"name": "svelte-floating-ui",
 	"description": "Svelte actions for working with floating ui",
-	"version": "1.2.7",
+	"version": "1.2.8",
 	"license": "MIT",
 	"main": "./index.js",
 	"svelte": "./index.js",
@@ -45,12 +45,12 @@
 		"svelte-preprocess": "^4.10.7",
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.4",
-		"vite": "^4.0.4"
+		"vite": "^4.0.4",
+		"svelte2tsx": "^0.5.23"
 	},
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/core": "^1.1.0",
-		"@floating-ui/dom": "^1.1.0",
-		"svelte2tsx": "^0.5.23"
+		"@floating-ui/dom": "^1.1.0"
 	}
 }
