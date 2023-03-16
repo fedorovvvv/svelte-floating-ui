@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 //@ts-ignore
-import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "@floating-ui/core";
+import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "./core";
 //@ts-ignore
-import { arrow as arrowCore } from "@floating-ui/core";
-import { autoUpdate as _autoUpdate, computePosition } from "@floating-ui/dom";
+import { arrow as arrowCore } from "./core";
+import { autoUpdate as _autoUpdate, computePosition } from "./dom";
 import type { Options } from "@floating-ui/dom/src/autoUpdate";
 import type { Readable, Writable } from "svelte/store";
 import { get } from "svelte/store";
