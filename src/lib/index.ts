@@ -7,7 +7,7 @@ import { autoUpdate as _autoUpdate, computePosition, type MiddlewareArguments } 
 import type { Options } from "@floating-ui/dom/src/autoUpdate";
 import type { Readable, Writable } from "svelte/store";
 import { get } from "svelte/store";
-import { onDestroy } from 'svelte';
+import { onDestroy, tick } from 'svelte';
 
 export type ComputeConfig = Partial<ComputePositionConfig> & {
     onComputed?: (computed: ComputePositionReturn) => void
@@ -77,7 +77,9 @@ export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAc
         const initAutoUpdate = ({autoUpdate} = options || {}):typeof autoUpdateDestroy => {
             destroyAutoUpdate()
             if(autoUpdate !== false) {
-                return _autoUpdate(referenceElement, floatingElement, () => updatePosition(options), (autoUpdate === true ? {} : autoUpdate));
+                tick().then(() => {
+                    return _autoUpdate(referenceElement, floatingElement, () => updatePosition(options), (autoUpdate === true ? {} : autoUpdate));
+                })
             }
             return
         }
