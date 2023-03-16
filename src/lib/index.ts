@@ -3,7 +3,7 @@
 import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "./core";
 //@ts-ignore
 import { arrow as arrowCore } from "./core";
-import { autoUpdate as _autoUpdate, computePosition } from "./dom";
+import { autoUpdate as _autoUpdate, computePosition, type MiddlewareState } from "./dom";
 import type { Options } from "@floating-ui/dom/src/autoUpdate";
 import type { Readable, Writable } from "svelte/store";
 import { get } from "svelte/store";
@@ -118,7 +118,7 @@ export function arrow(options: ArrowOptions): Middleware {
     return {
         name: "arrow",
         options,
-        fn(args:unknown) {
+        fn(args:MiddlewareState) {
             const element = get(options.element);
 
             if (element) {

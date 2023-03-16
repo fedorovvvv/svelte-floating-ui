@@ -30,7 +30,6 @@
 		"format": "prettier --write --plugin-search-dir=. ."
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "1.0.0-next.91",
 		"@sveltejs/kit": "1.0.0-next.589",
 		"@sveltejs/package": "^1.0.2",
 		"@typescript-eslint/eslint-plugin": "^5.55.0",
