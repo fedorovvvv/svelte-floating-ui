@@ -24,7 +24,7 @@ npm i -D svelte-floating-ui
 
 ```svelte
 <script lang="ts">
-  import { offset, flip, shift } from "@floating-ui/dom";
+  import { offset, flip, shift } from "svelte-floating-ui/dom";
   import { createFloatingActions } from "svelte-floating-ui";
 
   const [ floatingRef, floatingContent ] = createFloatingActions({
@@ -90,7 +90,7 @@ You can use [autoUpdate options](https://floating-ui.com/docs/autoUpdate#options
 
 ```svelte
 <script>
-  import { offset, flip, shift } from "@floating-ui/dom";
+  import { offset, flip, shift } from "svelte-floating-ui/dom";
   import { createFloatingActions } from "svelte-floating-ui";
 
   const [ floatingRef, floatingContent ] = createFloatingActions({
@@ -133,8 +133,8 @@ This is an example of creating a tooltip that runs behind the mouse cursor:
 
 ```svelte
 <script lang='ts'>
+  import type { ClientRectObject, VirtualElement } from 'svelte-floating-ui/core'
   import { createFloatingActions } from 'svelte-floating-ui'
-  import type { ClientRectObject, VirtualElement } from '@floating-ui/core'
   import { writable } from 'svelte/store'
   
   const [floatingRef, floatingContent] = createFloatingActions({

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createFloatingActions } from '$lib';
-	import { offset, type ClientRectObject, type VirtualElement } from '@floating-ui/core';
-	import { flip, shift, size } from '@floating-ui/dom';
+	import { offset, type ClientRectObject, type VirtualElement } from '$lib/core';
+	import { flip, shift, size } from '$lib/dom';
 	import { writable } from 'svelte/store';
 
 	let opened = true;
