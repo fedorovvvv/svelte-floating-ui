@@ -3,12 +3,10 @@
 import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "./core";
 //@ts-ignore
 import { arrow as arrowCore } from "./core";
-import { autoUpdate as _autoUpdate, computePosition, type MiddlewareArguments } from "./dom";
-import type { Options } from "@floating-ui/dom/src/autoUpdate";
+import { autoUpdate as _autoUpdate, computePosition, type AutoUpdateOptions, type MiddlewareState } from "./dom";
 import type { Readable, Writable } from "svelte/store";
 import { get } from "svelte/store";
 import { onDestroy, tick } from 'svelte';
-
 export type ComputeConfig = Partial<ComputePositionConfig> & {
     onComputed?: (computed: ComputePositionReturn) => void
     /**
@@ -17,7 +15,7 @@ export type ComputeConfig = Partial<ComputePositionConfig> & {
     * object: All as in the autoUpdate documentation. Your parameters are added to the default ones;
     * @default true
     */
-    autoUpdate?: boolean | Partial<Options>
+    autoUpdate?: boolean | Partial<AutoUpdateOptions>
 };
 export type UpdatePosition = (contentOptions?: Omit<ComputeConfig, 'autoUpdate'>) => void;
 export type ReferenceAction = (node: HTMLElement | Writable<VirtualElement> | VirtualElement) => void;
@@ -120,7 +118,7 @@ export function arrow(options: ArrowOptions): Middleware {
     return {
         name: "arrow",
         options,
-        fn(args:MiddlewareArguments) {
+        fn(args:MiddlewareState) {
             const element = get(options.element);
 
             if (element) {
