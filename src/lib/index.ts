@@ -20,7 +20,7 @@ export type ComputeConfig = Partial<ComputePositionConfig> & {
 export type UpdatePosition = (contentOptions?: Omit<ComputeConfig, 'autoUpdate'>) => void;
 export type ReferenceAction = (node: HTMLElement | Writable<VirtualElement> | VirtualElement) => void;
 export type ContentAction = (node: HTMLElement, contentOptions?: ComputeConfig) => void;
-export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement> };
+export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement | undefined | null> };
 
 export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAction, ContentAction, UpdatePosition] {
     let referenceElement: ReferenceElement;
