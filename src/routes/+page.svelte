@@ -1,7 +1,7 @@
 <script lang='ts'>
-    import { createFloatingActions } from "$lib";
-    import { offset } from "$lib/core";
-    import { flip, shift, size } from "$lib/dom";
+    import { createFloatingActions } from "$lib/index.js";
+    import { offset } from "$lib/core/index.js";
+    import { flip, shift, size } from "$lib/dom/index.js";
 
     let opened = false
     const [ floatingRef, floatingContent ] = createFloatingActions({

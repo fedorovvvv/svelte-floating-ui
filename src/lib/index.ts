@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 //@ts-ignore
-import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "./core";
+import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "./core/index.js";
 //@ts-ignore
 import { arrow as arrowCore } from "./core";
-import { autoUpdate as _autoUpdate, computePosition, type AutoUpdateOptions, type MiddlewareState } from "./dom";
+import { autoUpdate as _autoUpdate, computePosition, type AutoUpdateOptions, type MiddlewareState } from "./dom/index.js";
 import type { Readable, Writable } from "svelte/store";
 import { get } from "svelte/store";
 import { onDestroy, tick } from 'svelte';
