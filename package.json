@@ -1,7 +1,7 @@
 {
 	"name": "svelte-floating-ui",
 	"description": "Svelte actions for working with floating ui",
-	"version": "1.5.7",
+	"version": "1.5.8",
 	"license": "MIT",
 	"main": "./index.js",
 	"types": "./index.d.ts",
@@ -54,17 +54,19 @@
 		"@floating-ui/dom": "^1.5.3"
 	},
 	"exports": {
-		"./package.json": "./package.json",
 		"./core": {
 			"import": "./core/index.js",
+			"svelte": "./core/index.js",
 			"types": "./core/index.d.ts"
 		},
 		"./dom": {
 			"import": "./dom/index.js",
+			"svelte": "./dom/index.js",
 			"types": "./dom/index.d.ts"
 		},
 		".": {
 			"import": "./index.js",
+			"svelte": "./index.js",
 			"types": "./index.d.ts"
 		}
 	}
