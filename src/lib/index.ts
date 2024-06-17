@@ -2,7 +2,7 @@
 //@ts-ignore
 import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "./core/index.js";
 //@ts-ignore
-import { arrow as arrowCore } from "./core";
+import { arrow as arrowCore } from "./core/index.js";
 import { autoUpdate as _autoUpdate, computePosition, type AutoUpdateOptions, type MiddlewareState } from "./dom/index.js";
 import type { Readable, Writable } from "svelte/store";
 import { get } from "svelte/store";
