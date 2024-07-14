@@ -18,9 +18,9 @@ export type ComputeConfig = Partial<ComputePositionConfig> & {
     autoUpdate?: boolean | Partial<AutoUpdateOptions>
 };
 export type UpdatePosition = (contentOptions?: Omit<ComputeConfig, 'autoUpdate'>) => void;
-export type ReferenceAction = (node: HTMLElement | Writable<VirtualElement> | VirtualElement) => void;
-export type ContentAction = (node: HTMLElement, contentOptions?: ComputeConfig) => void;
-export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement | undefined | null> };
+export type ReferenceAction = (node: HTMLElement | SVGElement | Writable<VirtualElement> | VirtualElement) => void;
+export type ContentAction = (node: HTMLElement | SVGElement, contentOptions?: ComputeConfig) => void;
+export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement | SVGElement | undefined | null> };
 
 export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAction, ContentAction, UpdatePosition] {
     let referenceElement: ReferenceElement;
