@@ -4,9 +4,9 @@
 	"version": "1.6.0",
 	"license": "MIT",
 	"type": "module",
-	"main": "./index.js",
-	"types": "./index.d.ts",
-	"svelte": "./index.js",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"svelte": "./dist/index.js",
 	"repository": "https://github.com/fedorovvvv/svelte-floating-ui",
 	"author": "Nikita Fedorov <nikitafedorovvvvv@gmail.com>",
 	"keywords": [
@@ -37,8 +37,7 @@
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check --plugin-search-dir=. . && eslint .",
-		"format": "prettier --write --plugin-search-dir=. .",
-		"publish": "publish"
+		"format": "prettier --write --plugin-search-dir=. ."
 	},
 	"devDependencies": {
 		"@sveltejs/kit": "^2.20.2",
@@ -61,13 +60,14 @@
 	},
 	"exports": {
 		"./dom": {
-			"types": "./dom/index.d.ts",
-			"svelte": "./dom/index.js",
-			"default": "./dom/index.js"
+			"types": "./dist/dom/index.d.ts",
+			"svelte": "./dist/dom/index.js",
+			"default": "./dist/dom/index.js"
 		},
+		"./package.json": "./package.json",
 		".": {
-			"types": "./index.d.ts",
-			"default": "./index.js"
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
 		}
 	},
 	"typesVersions": {
