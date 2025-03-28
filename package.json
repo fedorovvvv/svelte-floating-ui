@@ -1,7 +1,7 @@
 {
 	"name": "svelte-floating-ui",
 	"description": "Svelte actions for working with floating ui",
-	"version": "1.6.0",
+	"version": "1.6.1",
 	"license": "MIT",
 	"type": "module",
 	"main": "./dist/index.js",
