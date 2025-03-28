@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { createFloatingActions } from '$lib/index.js';
-	import { offset, type VirtualElement } from '$lib/dom/index.js';
+	import { createFloatingActions, createVirtualElement } from '$lib/index.js';
+	import { offset, type ClientRectObject } from '$lib/dom/index.js';
 	import { flip, shift, size } from '$lib/dom/index.js';
-	import { writable } from 'svelte/store';
 
 	let opened = true;
 	const [floatingRef, floatingContent] = createFloatingActions({
@@ -34,7 +33,7 @@
 		y = ev.clientY;
 	};
 
-	const getBoundingClientRect = $derived.by(() => () => ({
+	const getBoundingClientRect: ClientRectObject = $derived({
 		x,
 		y,
 		top: y,
@@ -43,12 +42,12 @@
 		right: x,
 		width: 0,
 		height: 0
-	}));
+	});
 
-	const virtualElement = writable<VirtualElement>({ getBoundingClientRect });
+	const virtualElement = createVirtualElement({ getBoundingClientRect });
 
 	$effect(() => {
-		virtualElement.set({ getBoundingClientRect });
+		virtualElement.update({ getBoundingClientRect });
 	});
 
 	floatingRef(virtualElement);
@@ -72,41 +71,3 @@
 		{/if}
 	</div>
 </main>
-
-<!-- svelte-ignore css-unused-selector -->
-<style>
-	* {
-		box-sizing: border-box;
-		padding: 0;
-		margin: 0;
-	}
-	main {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		height: 500px;
-	}
-	.wrapper {
-		position: relative;
-	}
-	button {
-		position: relative;
-		width: 100px;
-		height: 50px;
-		display: block;
-	}
-	ul {
-		width: 200px;
-		height: 400px;
-		background: #fff;
-		border-radius: 4px;
-		border: 2px solid #ddd;
-		list-style: none;
-		padding: 4px;
-	}
-	ul li {
-		width: 100%;
-		display: block;
-	}
-</style>

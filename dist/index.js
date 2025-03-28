@@ -1,70 +1,67 @@
-//@ts-ignore
-import { arrow as arrowCore } from "./core/index.js";
-import { autoUpdate as _autoUpdate, computePosition } from "./dom/index.js";
-import { get, writable } from "svelte/store";
+import { autoUpdate as floatingAutoUpdate, computePosition, arrow as arrowDom } from './dom/index.js';
+import { get, writable } from 'svelte/store';
 import { onDestroy, tick } from 'svelte';
-export function createFloatingActions(initOptions) {
+export const createFloatingActions = (initOptions) => {
     let referenceElement;
     let floatingElement;
     const defaultOptions = {
         autoUpdate: true
     };
-    const options = writable(initOptions ?? {});
+    let options = initOptions ?? {};
     const getOptions = (mixin) => {
         return { ...defaultOptions, ...(initOptions || {}), ...(mixin || {}) };
     };
-    const updatePosition = (updateOptions) => {
+    const update = (updateOptions) => {
         if (referenceElement && floatingElement) {
-            options.set(getOptions(updateOptions));
-            const optionsValue = get(options);
-            computePosition(referenceElement, floatingElement, optionsValue)
-                .then(v => {
+            options = getOptions(updateOptions);
+            computePosition(referenceElement, floatingElement, options).then((v) => {
                 Object.assign(floatingElement.style, {
                     position: v.strategy,
                     left: `${v.x}px`,
-                    top: `${v.y}px`,
+                    top: `${v.y}px`
                 });
-                optionsValue?.onComputed && optionsValue.onComputed(v);
+                options?.onComputed && options.onComputed(v);
             });
         }
     };
-    const referenceAction = node => {
+    const referenceAction = (node) => {
         if ('subscribe' in node) {
             setupVirtualElementObserver(node);
             return {};
         }
         else {
             referenceElement = node;
-            updatePosition();
+            update();
         }
     };
     const contentAction = (node, contentOptions) => {
         let autoUpdateDestroy;
         floatingElement = node;
-        options.set(getOptions(contentOptions));
-        setTimeout(() => updatePosition(contentOptions), 0); //tick doesn't work
-        updatePosition(contentOptions);
+        options = getOptions(contentOptions);
+        setTimeout(() => update(contentOptions), 0); //tick doesn't work
+        update(contentOptions);
         const destroyAutoUpdate = () => {
             if (autoUpdateDestroy) {
                 autoUpdateDestroy();
                 autoUpdateDestroy = undefined;
             }
         };
-        const initAutoUpdate = (optionsValue = get(options) || {}) => {
-            const { autoUpdate } = optionsValue;
-            destroyAutoUpdate();
-            if (autoUpdate !== false) {
-                tick().then(() => {
-                    return _autoUpdate(referenceElement, floatingElement, () => updatePosition(optionsValue), (autoUpdate === true ? {} : autoUpdate));
-                });
-            }
-            return;
+        const initAutoUpdate = (_options = options) => {
+            return new Promise((resolve) => {
+                const { autoUpdate } = _options || {};
+                destroyAutoUpdate();
+                if (autoUpdate !== false) {
+                    tick().then(() => {
+                        resolve(floatingAutoUpdate(referenceElement, floatingElement, () => update(_options), autoUpdate === true ? {} : autoUpdate));
+                    });
+                }
+            });
         };
-        autoUpdateDestroy = initAutoUpdate();
+        initAutoUpdate().then((destroy) => (autoUpdateDestroy = destroy));
         return {
             update(contentOptions) {
-                updatePosition(contentOptions);
-                autoUpdateDestroy = initAutoUpdate(contentOptions);
+                update(contentOptions);
+                initAutoUpdate().then((destroy) => (autoUpdateDestroy = destroy));
             },
             destroy() {
                 destroyAutoUpdate();
@@ -75,30 +72,26 @@ export function createFloatingActions(initOptions) {
         const unsubscribe = node.subscribe(($node) => {
             if (referenceElement === undefined) {
                 referenceElement = $node;
-                updatePosition();
+                update();
             }
             else {
                 // Preserve the reference to the virtual element.
                 Object.assign(referenceElement, $node);
-                updatePosition();
+                update();
             }
         });
         onDestroy(unsubscribe);
     };
-    return [
-        referenceAction,
-        contentAction,
-        updatePosition
-    ];
-}
-export function arrow(options) {
+    return [referenceAction, contentAction, update];
+};
+export const arrow = (options) => {
     return {
-        name: "arrow",
+        name: 'arrow',
         options,
         fn(args) {
             const element = get(options.element);
             if (element) {
-                return arrowCore({
+                return arrowDom({
                     element,
                     padding: options.padding
                 }).fn(args);
@@ -106,4 +99,22 @@ export function arrow(options) {
             return {};
         }
     };
-}
+};
+export const createArrowRef = () => writable(null);
+const parseVirtualElementOptions = ({ getBoundingClientRect, getClientRects, ...options }) => {
+    return {
+        getBoundingClientRect: () => getBoundingClientRect,
+        getClientRects: getClientRects && (() => getClientRects),
+        ...options
+    };
+};
+export const createVirtualElement = (options) => {
+    const store = writable(parseVirtualElementOptions(options));
+    const update = (options) => {
+        store.set(parseVirtualElementOptions(options));
+    };
+    return {
+        subscribe: store.subscribe,
+        update
+    };
+};

@@ -11,7 +11,15 @@
 [Floating UI](https://github.com/floating-ui/floating-ui/) for Svelte with [actions](https://svelte.dev/docs#use_action). No wrapper components or component bindings required!
 
 ```bash
-npm i svelte-floating-ui @floating-ui/core
+npm install svelte-floating-ui @floating-ui/dom
+```
+
+```bash
+yarn add svelte-floating-ui @floating-ui/dom
+```
+
+```bash
+pnpm install svelte-floating-ui @floating-ui/dom
 ```
 
 ## Usage
@@ -37,12 +45,12 @@ npm i svelte-floating-ui @floating-ui/core
     ]
   });
 
-  let showTooltip: boolean = false;
+  let showTooltip = $state(false);
 </script>
 
 <button
-  on:mouseenter={() => showTooltip = true}
-  on:mouseleave={() => showTooltip = false}
+  onmouseenter={() => showTooltip = true}
+  onmouseleave={() => showTooltip = false}
   use:floatingRef
 >Hover me</button>
 
@@ -133,43 +141,42 @@ This is an example of creating a tooltip that runs behind the mouse cursor:
 
 ```svelte
 <script lang='ts'>
-  import type { ClientRectObject, VirtualElement } from 'svelte-floating-ui/core'
-  import { createFloatingActions } from 'svelte-floating-ui'
-  import { writable } from 'svelte/store'
+  import type { ClientRectObject } from 'svelte-floating-ui/dom'
+  import { createFloatingActions, createVirtualElement, type CreateVirtualElementOptions } from 'svelte-floating-ui'
   
   const [floatingRef, floatingContent] = createFloatingActions({
     strategy: 'fixed', //or absolute
   })
 
-  let x = 0
-  let y = 0
+  let x = $state(0)
+  let y = $state(0)
 
-  const mousemove = (ev: MouseEvent) => {
+  const handleMouseMove = (ev: MouseEvent) => {
     x = ev.clientX
     y = ev.clientY
   }
 
-  $: getBoundingClientRect = ():ClientRectObject => {
-    return {
-      x,
-      y,
-      top: y,
-      left: x,
-      bottom: y,
-      right: x,
-      width: 0,
-      height: 0
-    }
-  }
-  
-  const virtualElement = writable<VirtualElement>({ getBoundingClientRect })
+  const getBoundingClientRect: ClientRectObject = $derived({
+    x,
+    y,
+    top: y,
+    left: x,
+    bottom: y,
+    right: x,
+    width: 0,
+    height: 0
+  });
 
-  $: virtualElement.set({ getBoundingClientRect })
+ const virtualElement = createVirtualElement({ getBoundingClientRect });
+
+ $effect(() => {
+  virtualElement.update({ getBoundingClientRect });
+ });
 
   floatingRef(virtualElement)
 </script>
 
-<svelte:window on:mousemove={mousemove}/>
+<svelte:window onmousemove={handleMouseMove}/>
 
 <main>
   <h2 use:floatingContent>Magic</h2>
@@ -189,47 +196,51 @@ For convenience, a custom [Arrow middleware](https://floating-ui.com/docs/arrow)
 To set the styles, you can pass the [`onComputed`](#applying-custom-styles-on-compute) option. The below implementation is copied from the [Floating UI Tutorial](https://floating-ui.com/docs/tutorial#arrow-middleware).
 
 ```svelte
-<script>
-  import { writable } from "svelte/store";
-  import { arrow } from "svelte-floating-ui";
+<script lang="ts">
+ import { arrow, createArrowRef, createFloatingActions } from 'svelte-floating-ui';
+ const arrowRef = createArrowRef();
+ let showTooltip = $state(true);
 
-  const arrowRef = writable(null);
-  const [ floatingRef, floatingContent, update] = createFloatingActions({
-    strategy: "absolute",
-    placement: "bottom",
-    middleware: [
-      arrow({ element: arrowRef })
-    ],
-    onComputed({ placement, middlewareData }) {
-      const { x, y } = middlewareData.arrow;
-      const staticSide = {
-        top: 'bottom',
-        right: 'left',
-        bottom: 'top',
-        left: 'right',
-      }[placement.split('-')[0]];
+ const [floatingRef, floatingContent] = createFloatingActions({
+  strategy: 'absolute',
+  placement: 'bottom',
+  middleware: [arrow({ element: arrowRef })],
+  onComputed({ placement, middlewareData }) {
+   if ($arrowRef) {
+    const { x, y } = middlewareData.arrow || {};
+    const staticSide =
+     {
+      top: 'bottom',
+      right: 'left',
+      bottom: 'top',
+      left: 'right'
+     }[placement.split('-')[0]] ?? 'top';
 
-      Object.assign($arrowRef.style, {
-        left: x != null ? `${x}px` : "",
-        top: y != null ? `${y}px` : "",
-        [staticSide]: "-4px"
-      });
-    }
-  });
+    Object.assign($arrowRef.style, {
+     left: x != null ? `${x}px` : '',
+     top: y != null ? `${y}px` : '',
+     [staticSide]: '-4px'
+    });
+   }
+  }
+ });
 </script>
 
-<button
-  on:mouseenter={() => showTooltip = true}
-  on:mouseleave={() => showTooltip = false}
-  use:floatingRef
->Hover me</button>
+<main>
+ <button
+  onmouseenter={() => (showTooltip = true)}
+  onmouseleave={() => (showTooltip = false)}
+  use:floatingRef>Hover me</button
+ >
 
-{#if showTooltip}
+ {#if showTooltip}
   <div class="tooltip" use:floatingContent>
-    Tooltip this is some longer text than the button
-    <div class="arrow" bind:this={$arrowRef} />
+   Tooltip this is some longer text than the button
+   <div class="arrow" style="position: absolute;" bind:this={$arrowRef}>^</div>
   </div>
-{/if}
+ {/if}
+</main>
+
 ```
 
 _Thanks to [TehNut/svelte-floating-ui](https://github.com/TehNut/svelte-floating-ui) for the foundation for this package_
