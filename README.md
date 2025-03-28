@@ -135,8 +135,6 @@ autoUpdate?: boolean | Partial<Options>
 
 **Svelte Floating UI** allows you to use the `floatingRef` (reference node) like [VirtualElement](https://floating-ui.com/docs/virtual-elements)
 
-[Svelte stores](https://svelte.dev/docs#run-time-svelte-store) allow you to make these elements reactive and provide full support for them in the **Svelte Floating UI**
-
 This is an example of creating a tooltip that runs behind the mouse cursor:
 
 ```svelte
@@ -191,7 +189,7 @@ See [Arrow Middleware](#arrow-middleware) for an example on it's usage.
 
 ## Arrow Middleware
 
-For convenience, a custom [Arrow middleware](https://floating-ui.com/docs/arrow) is provided. Rather than accepting an `HTMLElement`, this takes a `Writable<HTMLElement>`. Otherwise, this middleware works exactly as the regular Floating UI one, including needing to manually set the arrow styles.
+For convenience, a custom [Arrow middleware](https://floating-ui.com/docs/arrow) is provided. Rather than accepting an `HTMLElement`, this takes a `Writable<HTMLElement>` (`createArrowRef`). Otherwise, this middleware works exactly as the regular Floating UI one, including needing to manually set the arrow styles.
 
 To set the styles, you can pass the [`onComputed`](#applying-custom-styles-on-compute) option. The below implementation is copied from the [Floating UI Tutorial](https://floating-ui.com/docs/tutorial#arrow-middleware).
 
