@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-//@ts-ignore
-import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "./core/index.js";
-//@ts-ignore
-import { arrow as arrowCore } from "./core/index.js";
-import { autoUpdate as _autoUpdate, computePosition, type AutoUpdateOptions, type MiddlewareState } from "./dom/index.js";
+import type { ComputePositionConfig, ComputePositionReturn, FloatingElement, Middleware, Padding, ReferenceElement, VirtualElement } from "./dom/index.js";
+import { autoUpdate as floatingAutoUpdate, computePosition, type AutoUpdateOptions, type MiddlewareState, arrow as arrowDom } from "./dom/index.js";
 import type { Readable, Writable } from "svelte/store";
 import { get } from "svelte/store";
 import { onDestroy, tick } from 'svelte';
+
 export type ComputeConfig = Partial<ComputePositionConfig> & {
     onComputed?: (computed: ComputePositionReturn) => void
     /**
@@ -17,26 +15,30 @@ export type ComputeConfig = Partial<ComputePositionConfig> & {
     */
     autoUpdate?: boolean | Partial<AutoUpdateOptions>
 };
-export type UpdatePosition = (contentOptions?: Omit<ComputeConfig, 'autoUpdate'>) => void;
+export type Update = (contentOptions?: Omit<ComputeConfig, 'autoUpdate'>) => void;
 export type ReferenceAction = (node: HTMLElement | SVGElement | Writable<VirtualElement> | VirtualElement) => void;
-export type ContentAction = (node: HTMLElement | SVGElement, contentOptions?: ComputeConfig) => void;
+export type ContentAction = (node: HTMLElement, contentOptions?: ComputeConfig) => void;
 export type ArrowOptions = { padding?: Padding, element: Writable<HTMLElement | SVGElement | undefined | null> };
 
-export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAction, ContentAction, UpdatePosition] {
+type AutoUpdateDestroy = ReturnType<typeof floatingAutoUpdate>
+type InitAutoUpdate = (options?:ComputeConfig) => Promise<AutoUpdateDestroy>
+
+export const createFloatingActions =(initOptions?: ComputeConfig): [ReferenceAction, ContentAction, Update] => {
     let referenceElement: ReferenceElement;
     let floatingElement: FloatingElement;
     const defaultOptions:Partial<ComputeConfig> = {
         autoUpdate: true
     }
-    let options: ComputeConfig | undefined = initOptions;
 
-    const getOptions = (mixin?:object):ComputeConfig => {
+    let options:ComputeConfig = initOptions ?? {}
+
+    const getOptions = (mixin?:Omit<ComputeConfig, 'autoUpdate'>):ComputeConfig => {
         return {...defaultOptions, ...(initOptions || {}), ...(mixin || {}) }
     }
 
-    const updatePosition:UpdatePosition = (updateOptions) => {
+    const update:Update = (updateOptions) => {
         if (referenceElement && floatingElement) {
-            options = getOptions(updateOptions);
+            options = getOptions(updateOptions)
             computePosition(referenceElement, floatingElement, options)
                 .then(v => {
                     Object.assign(floatingElement.style, {
@@ -55,37 +57,43 @@ export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAc
 			return {};
 		} else {
             referenceElement = node;
-            updatePosition();
+            update();
 		}
         
     }
 
     const contentAction: ContentAction = (node, contentOptions) => {
-        let autoUpdateDestroy:ReturnType<typeof _autoUpdate> | undefined
+        let autoUpdateDestroy:AutoUpdateDestroy | undefined
         floatingElement = node;
-        options = getOptions(contentOptions);
-        setTimeout(() => updatePosition(contentOptions), 0) //tick doesn't work
-        updatePosition(contentOptions)
+        options = getOptions(contentOptions)
+        setTimeout(() => update(contentOptions), 0) //tick doesn't work
+        update(contentOptions)
+
         const destroyAutoUpdate = () => {
             if (autoUpdateDestroy) {
                 autoUpdateDestroy()
                 autoUpdateDestroy = undefined
             }
         }
-        const initAutoUpdate = ({autoUpdate} = options || {}):typeof autoUpdateDestroy => {
-            destroyAutoUpdate()
-            if(autoUpdate !== false) {
-                tick().then(() => {
-                    return _autoUpdate(referenceElement, floatingElement, () => updatePosition(options), (autoUpdate === true ? {} : autoUpdate));
-                })
-            }
-            return
+
+        const initAutoUpdate:InitAutoUpdate = (_options = options) => {
+            return new Promise<AutoUpdateDestroy>((resolve) => {
+                const {autoUpdate} = _options || {}
+                destroyAutoUpdate()
+                if(autoUpdate !== false) {
+                    tick().then(() => {
+                        resolve(floatingAutoUpdate(referenceElement, floatingElement, () => update(_options), (autoUpdate === true ? {} : autoUpdate)))
+                    })
+                }
+            })
         }
-        autoUpdateDestroy = initAutoUpdate()
+
+        initAutoUpdate().then(destroy => autoUpdateDestroy = destroy)
+
         return {
             update(contentOptions:Parameters<typeof contentAction>[1]) {
-                updatePosition(contentOptions)
-                autoUpdateDestroy = initAutoUpdate(contentOptions)
+                update(contentOptions)
+                initAutoUpdate().then(destroy => autoUpdateDestroy = destroy)
             },
             destroy() {
                 destroyAutoUpdate()
@@ -97,24 +105,24 @@ export function createFloatingActions(initOptions?: ComputeConfig): [ReferenceAc
 		const unsubscribe = node.subscribe(($node) => {
 			if (referenceElement === undefined) {
 				referenceElement = $node;
-				updatePosition();
+				update();
 			} else {
 				// Preserve the reference to the virtual element.
 				Object.assign(referenceElement, $node);
-				updatePosition();
+				update();
 			}
 		});
-		onDestroy(unsubscribe);
+        onDestroy(unsubscribe)
 	};
 
     return [
         referenceAction,
         contentAction,
-        updatePosition
+        update
     ]
 }
 
-export function arrow(options: ArrowOptions): Middleware {
+export const arrow = (options: ArrowOptions): Middleware => {
     return {
         name: "arrow",
         options,
@@ -122,7 +130,7 @@ export function arrow(options: ArrowOptions): Middleware {
             const element = get(options.element);
 
             if (element) {
-                return arrowCore({
+                return arrowDom({
                     element,
                     padding: options.padding
                 }).fn(args);

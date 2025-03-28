@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createFloatingActions } from '$lib/index.js';
-	import { offset, type ClientRectObject, type VirtualElement } from '$lib/core/index.js';
+	import { offset, type VirtualElement } from '$lib/dom/index.js';
 	import { flip, shift, size } from '$lib/dom/index.js';
 	import { writable } from 'svelte/store';
 
@@ -18,39 +18,40 @@
 					Object.assign(elements.floating.style, {
 						maxWidth: `${availableWidth}px`,
 						maxHeight: `${availableHeight}px`
-					})
+					});
 				}
 			})
-		],
-	})
+		]
+	});
 
-	let autoUpdate = false
+	let autoUpdate = $state(false);
 
-	let x = 0
-	let y = 0
+	let x = $state(0);
+	let y = $state(0);
 
 	const mousemove = (ev: MouseEvent) => {
 		x = ev.clientX;
 		y = ev.clientY;
 	};
 
-	$: getBoundingClientRect = (): ClientRectObject => {
-		return {
-			x,
-			y,
-			top: y,
-			left: x,
-			bottom: y,
-			right: x,
-			width: 0,
-			height: 0
-		};
-	};
-	const virtualElement = writable<VirtualElement>({ getBoundingClientRect })
+	const getBoundingClientRect = $derived.by(() => () => ({
+		x,
+		y,
+		top: y,
+		left: x,
+		bottom: y,
+		right: x,
+		width: 0,
+		height: 0
+	}));
 
-	$: virtualElement.set({ getBoundingClientRect })
+	const virtualElement = writable<VirtualElement>({ getBoundingClientRect });
 
-	floatingRef(virtualElement)
+	$effect(() => {
+		virtualElement.set({ getBoundingClientRect });
+	});
+
+	floatingRef(virtualElement);
 </script>
 
 <svelte:window on:mousemove={mousemove} />
