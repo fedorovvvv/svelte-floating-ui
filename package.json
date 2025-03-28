@@ -8,7 +8,7 @@
 	"types": "./index.d.ts",
 	"svelte": "./index.js",
 	"repository": "https://github.com/fedorovvvv/svelte-floating-ui",
-	"author": "Nikita Fedorov <nikitafedorov7@yandex.ru>",
+	"author": "Nikita Fedorov <nikitafedorovvvvv@gmail.com>",
 	"keywords": [
 		"svelte",
 		"light",
@@ -18,7 +18,15 @@
 		"svelte-floating-ui",
 		"svelte-floating",
 		"svelte-v3",
-		"svelte3"
+		"svelte3",
+		"svelte5",
+		"svelte-v5",
+		"svelte-5",
+		"sveltev5",
+		"simple",
+		"easy",
+		"lightweight",
+		"reactive"
 	],
 	"scripts": {
 		"dev": "vite dev",
