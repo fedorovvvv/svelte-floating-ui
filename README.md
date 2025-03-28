@@ -11,16 +11,15 @@
 [Floating UI](https://github.com/floating-ui/floating-ui/) for Svelte with [actions](https://svelte.dev/docs#use_action). No wrapper components or component bindings required!
 
 ```bash
-npm install svelte-floating-ui @floating-ui/dom
+npm install svelte-floating-ui
+```
+```bash
+pnpm install svelte-floating-ui
+```
+```bash
+yarn add svelte-floating-ui
 ```
 
-```bash
-yarn add svelte-floating-ui @floating-ui/dom
-```
-
-```bash
-pnpm install svelte-floating-ui @floating-ui/dom
-```
 
 ## Usage
 
