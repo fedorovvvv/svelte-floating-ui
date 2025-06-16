@@ -139,7 +139,7 @@ This is an example of creating a tooltip that runs behind the mouse cursor:
 ```svelte
 <script lang='ts'>
   import type { ClientRectObject } from 'svelte-floating-ui/dom'
-  import { createFloatingActions, createVirtualElement, type CreateVirtualElementOptions } from 'svelte-floating-ui'
+  import { createFloatingActions, createVirtualElement } from 'svelte-floating-ui'
   
   const [floatingRef, floatingContent] = createFloatingActions({
     strategy: 'fixed', //or absolute
